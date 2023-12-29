@@ -1,7 +1,11 @@
 // import 'People.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:math';
-var contacts = [];
+import 'People.dart';
+People NullPerson = People('Null', 'Null', [], 'Null', null);
+List<People> contacts = [];
+
+
 
 addContact (person) {
   contacts.add(person);

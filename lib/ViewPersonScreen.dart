@@ -5,6 +5,8 @@ import 'package:remembrall/Requests/Firestore.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:remembrall/HomePage.dart';
+import 'package:remembrall/globals.dart';
 
 class ViewPersonScreen extends StatefulWidget {
   const ViewPersonScreen({super.key, required this.person});
@@ -18,12 +20,13 @@ class _ViewPersonScreenState extends State<ViewPersonScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+  print(widget.person.notes.length);
+  // print(widget.person.notes[0].text);
     return Scaffold(
       appBar: AppBar(title: Text(widget.person.name),),
       body: GroupedListView<dynamic, String>(
         itemBuilder: (BuildContext context, dynamic element) {
-          return noteItemWidget(element.text, context);
+          return noteItemWidget(element, context);
         },
         elements: widget.person.notes,
         floatingHeader: true,
@@ -64,9 +67,17 @@ class _ViewPersonScreenState extends State<ViewPersonScreen> {
       ),
     );
   }
-  Widget noteItemWidget(String noteText, BuildContext context, ) {
+  Widget noteItemWidget(Note note, BuildContext context, ) {
     return InkWell(
-      onTap: getNotes,
+      // onTap: testFunc(note),
+      onTap: () {
+        updateRemoveNote(widget.person, note);
+        setState(() {
+          removeLocalNote(note, widget.person);
+          widget.person.notes.remove(note);
+        });
+
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
         padding: const EdgeInsets.all(12.0), // Adjust vertical padding to reduce height
@@ -84,7 +95,7 @@ class _ViewPersonScreenState extends State<ViewPersonScreen> {
         child: Align(
           alignment: Alignment.topLeft,
           child: Text(
-            noteText,
+            note.text,
             style: GoogleFonts.roboto(
               fontSize: 16.0,
             ),
@@ -92,6 +103,13 @@ class _ViewPersonScreenState extends State<ViewPersonScreen> {
         ),
       ),
     );
+  }
+  testFunc(theNote) {
+    for (Note note in widget.person.notes) {
+      if(note.text == theNote.text && note.date == theNote.date) {
+        print('Found it');
+      }
+    }
   }
 }
 

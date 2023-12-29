@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'People.dart';
 import 'Requests/GetContacts.dart';
 import 'ViewPersonScreen.dart';
-// import 'globals.dart';
+import 'globals.dart';
 import 'People.dart';
 import 'Requests/Firestore.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'AddPersonScreen.dart';
 
-
+List<People> _contacts = [];
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
@@ -19,7 +19,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _permissionDenied = false;
-  List<People> _contacts = [];
+
   // late List<Contact> contactsList;
   List<People> filteredList = [];
   TextEditingController searchController = TextEditingController();
@@ -59,15 +59,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // findPerson(id) {
+  //
+  //   var selectedPerson = contacts.firstWhere((person) => person.id == k, orElse: () => 'null');
+  //   var newList = contacts.firstWhere((element) => element == 'green',
+  //       orElse: () => 'No matching color found');
+  // }
+
   Future<void> fetchNotes() async {
     Map notesList = await getNotes();
-    People selectedPerson(String id) => _contacts.firstWhere((person) => person.id == id);
-
+    // People? selectedPerson(String id) => contacts.firstWhere((person) => person.id == id);
+    print(_contacts.length);
     if(notesList.isNotEmpty) {
       notesList.forEach((k,v) {
+        // print(k);
+        // print(v);
+
+        People selectedPerson = _contacts.firstWhere((person) => person.id == k, orElse: () => NullPerson);
+        print(selectedPerson.name);
         print(k);
-        print(v);
-        selectedPerson(k).notes += v;
+        if(selectedPerson.id != 'Null') {
+          selectedPerson.notes += v;
+        }
+
     } );
     }
   }
@@ -120,11 +134,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: filteredList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => ViewPersonScreen(person: filteredList[index],))
                       );
+                      setState(() {
+                        filteredList = _contacts;
+                      });
                     },
                     child: ListTile(
                       trailing: filteredList[index].notes.length > 0 ? Icon(Icons.list) : null,
@@ -172,4 +189,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return const AssetImage('assets/contact.png');
   }
+}
+
+
+removeLocalNote(dynamic note, People selPerson) {
+  People selectedPerson = _contacts.firstWhere((person) => person.id == selPerson.id);
+  selectedPerson.notes.remove(note);
+
 }

@@ -31,6 +31,35 @@ addNote(People person,note) async {
 
 }
 
+updateRemoveNote(People person,note) async {
+  DocumentReference<Map<String, dynamic>> newNoteRef = FirebaseFirestore.instance.collection('notes').doc(person.id);
+  if (person.notes.isNotEmpty) {
+    var newNotes = [];
+    var newDates = [];
+    person.notes.forEach((noteElement) {
+      if (noteElement.text != note.text && noteElement.date != note.date) {
+        newNotes.add(noteElement.text);
+        newDates.add(noteElement.date);
+      }
+    });
+    print(person.notes.length);
+    print('Old ^ NEw v');
+    print(newNotes.length);
+    Map<String, dynamic> newNote = {
+      'dates': newDates,
+      'text': newNotes,
+    };
+    await newNoteRef.update(newNote);
+  }
+
+  // Set the new note using the personId as the document ID
+  // await newNoteRef.set(newNote);
+
+
+  print('Note updated to Firestore successfully');
+
+}
+
 Future<Map<dynamic,dynamic>> getNotes() async {
   var notesList = {};
 
