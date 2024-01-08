@@ -197,3 +197,17 @@ removeLocalNote(dynamic note, People selPerson) {
   selectedPerson.notes.remove(note);
 
 }
+updateLocalNote(dynamic note, People selPerson, updatedNote) {
+  People selectedPerson = _contacts.firstWhere((person) => person.id == selPerson.id);
+  int index = selectedPerson.notes.indexWhere((inote) => inote.text == note.text && inote.date == note.date);
+
+  if (index != -1) {
+    // Note found, update it
+    selectedPerson.notes[index] = updatedNote;
+  } else {
+    print("Unable to find note!");
+  }
+  // selectedPerson.notes[note] = updatedNote;
+  // selectedPerson.notes.remove(note);
+
+}
